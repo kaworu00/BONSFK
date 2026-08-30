@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "qiongqi"
+display_name = "穷奇"
+max_hp = 90
+attack = 18
+color = Color(0.55, 0.25, 0.8, 1)
+action_name = "吞噬"
+story = "状如虎而有翼，好食人，助恶去善。"

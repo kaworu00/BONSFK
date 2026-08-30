@@ -1,0 +1,14 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "xiangyao"
+display_name = "相繇"
+max_hp = 220
+attack = 22
+color = Color(0.45, 0.2, 0.5, 1)
+action_name = "九头浊毒"
+is_boss = true
+story = "共工之臣，九首蛇身，所到之处尽成毒泽，百兽莫能居。"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "zhulong"
+display_name = "烛龙"
+max_hp = 110
+attack = 17
+combo_hits = 5
+is_mage = true
+color = Color(0.95, 0.6, 0.25, 1)
+skill_name = "睁眼为昼"
+skill_effect = "burn"
+story = "钟山之神，视为昼、瞑为夜，吹为冬、呼为夏，睁眼则天下大明。"

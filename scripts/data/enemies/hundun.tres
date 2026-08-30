@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "hundun"
+display_name = "混沌"
+max_hp = 130
+attack = 16
+color = Color(0.5, 0.4, 0.25, 1)
+action_name = "横冲"
+story = "无面目之兽，有目而不视，有耳而不听。"

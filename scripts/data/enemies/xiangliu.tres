@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "xiangliu"
+display_name = "相柳"
+max_hp = 160
+attack = 20
+color = Color(0.2, 0.5, 0.3, 1)
+action_name = "九头吐毒"
+story = "九首人面蛇身，所过之处皆成泽国。"

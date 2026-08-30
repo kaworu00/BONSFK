@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "taowu"
+display_name = "梼杌"
+max_hp = 110
+attack = 14
+color = Color(0.8, 0.2, 0.25, 1)
+action_name = "扑咬"
+story = "四凶之一，状如虎而人面，傲狠难训。"

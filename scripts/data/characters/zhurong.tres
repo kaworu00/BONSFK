@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "zhurong"
+display_name = "祝融"
+max_hp = 105
+attack = 16
+combo_hits = 5
+is_mage = true
+skill_name = "焚天业火"
+skill_effect = "burn"
+color = Color(1, 0.4, 0.15, 1)
+story = "上古火正，居南方司火。烈焰所过，万邪不生，其魂如不灭的炉火，代代相传。"

@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "jingwei"
+display_name = "精卫"
+max_hp = 90
+attack = 11
+combo_hits = 3
+is_mage = true
+color = Color(1, 0.55, 0.7, 1)
+skill_name = "填海术"
+story = "炎帝之女，溺于东海，化而为鸟，衔西山之木石以填沧海。执念不灭，便化作无穷战意。"

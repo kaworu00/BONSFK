@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "dayu"
+display_name = "大禹"
+max_hp = 150
+attack = 15
+combo_hits = 3
+is_mage = false
+color = Color(0.4, 0.55, 0.6, 1)
+skill_name = "疏导九河"
+story = "三过家门而不入，疏九河、定九州，洪水既平，万民始安。"

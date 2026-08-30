@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "gonggong"
+display_name = "共工"
+max_hp = 150
+attack = 18
+combo_hits = 4
+skill_name = "怒触不周"
+skill_effect = "stagger"
+color = Color(0.4, 0.3, 0.8, 1)
+story = "昔者共工与颛顼争为帝，怒而触不周之山，天柱折，地维绝。其刚烈之魂，至今难平。"

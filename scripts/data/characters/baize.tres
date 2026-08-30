@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "baize"
+display_name = "白泽"
+max_hp = 95
+attack = 12
+combo_hits = 4
+is_mage = true
+color = Color(0.9, 0.9, 0.95, 1)
+skill_name = "通晓万灵"
+story = "东望山有神兽，能言语，通晓天下万物之情，所言无不中。"

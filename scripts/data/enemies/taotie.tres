@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "taotie"
+display_name = "饕餮"
+max_hp = 140
+attack = 19
+color = Color(0.7, 0.45, 0.1, 1)
+action_name = "贪噬"
+story = "四凶之一，贪食无厌，见物即吞，凶煞难当。"

@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "kuafu"
+display_name = "夸父"
+max_hp = 160
+attack = 16
+combo_hits = 3
+is_mage = false
+color = Color(0.85, 0.55, 0.3, 1)
+skill_name = "逐日步"
+skill_effect = "stagger"
+story = "与日逐走的巨人，渴死于道，弃杖化为邓林。英魂如山，一步便是地动山摇。"

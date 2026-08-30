@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "chiyou"
+display_name = "蚩尤"
+max_hp = 180
+attack = 22
+combo_hits = 4
+is_mage = false
+color = Color(0.65, 0.2, 0.15, 1)
+skill_name = "五兵之利"
+skill_effect = "pierce"
+story = "铜头铁额，食沙石子，兵主战神，与黄帝争于涿鹿之野。"

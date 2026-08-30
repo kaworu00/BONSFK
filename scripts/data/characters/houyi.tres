@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "houyi"
+display_name = "后羿"
+max_hp = 120
+attack = 14
+combo_hits = 4
+color = Color(0.2, 0.65, 1, 1)
+skill_name = "射日箭"
+skill_effect = "pierce"
+story = "射落九日的弓手，功成之后却死于弟子之手，英魂至今游荡于大荒，等待一场新的征伐。"

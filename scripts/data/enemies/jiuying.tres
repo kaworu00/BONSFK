@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "jiuying"
+display_name = "九婴"
+max_hp = 100
+attack = 14
+color = Color(0.75, 0.3, 0.4, 1)
+action_name = "九首喷涌"
+story = "九首蛇身，喷水吐火，为害北地。"

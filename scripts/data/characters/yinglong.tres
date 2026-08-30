@@ -1,0 +1,15 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "yinglong"
+display_name = "应龙"
+max_hp = 100
+attack = 15
+combo_hits = 4
+is_mage = true
+color = Color(0.3, 0.8, 0.55, 1)
+skill_name = "兴云致雨"
+story = "背生双翼的神龙，助黄帝战蚩尤、助大禹治水。行云布雨，威泽四海。"

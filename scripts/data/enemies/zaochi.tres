@@ -1,0 +1,13 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/enemy_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "zaochi"
+display_name = "凿齿"
+max_hp = 100
+attack = 15
+color = Color(0.3, 0.65, 0.5, 1)
+action_name = "凿刺"
+story = "齿如凿、长三尺，曾为羿所诛的凶族，其齿至今犹利。"

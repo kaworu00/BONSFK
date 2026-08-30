@@ -1,0 +1,19 @@
+# Godot 4 自动生成的导入缓存（打开编辑器会自动重建，不要提交）
+.godot/
+
+# 资源导入元数据（自动重建，可忽略）
+*.import
+
+# 编辑器数据目录（本机误生成到项目里，正常应在 APPDATA，不要提交）
+export_templates/
+feature_profiles/
+script_templates/
+text_editor_themes/
+
+# 导出预设（含平台/密钥配置，按需决定是否提交）
+export_presets.cfg
+
+# 系统垃圾文件
+Thumbs.db
+.DS_Store
+desktop.ini

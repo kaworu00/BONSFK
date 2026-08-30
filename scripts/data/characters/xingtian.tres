@@ -1,0 +1,16 @@
+[gd_resource type="Resource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/data/character_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "xingtian"
+display_name = "刑天"
+max_hp = 140
+attack = 20
+combo_hits = 4
+is_mage = false
+color = Color(0.9, 0.25, 0.2, 1)
+skill_name = "干戚舞"
+skill_effect = "stagger"
+story = "与天帝争神，被断其首，乃以乳为目、以脐为口，操干戚而舞。战意至死不灭。"
