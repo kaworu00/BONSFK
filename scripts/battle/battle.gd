@@ -157,29 +157,40 @@ func _spawn_enemies() -> void:
     var group: Array = ENEMY_GROUPS.get(enemy_id, ENEMY_GROUPS["taowu"])
     var xs: Array = [760.0, 840.0, 680.0]  # 多个敌人错开站位
     for i in range(group.size()):
-        var eid: String = group[i]
-        var ed := load(ENEMY_PATH + eid + ".tres") as EnemyData
-        if ed == null:
-            continue
-        var e := {
-            "id": ed.id,
-            "name": ed.display_name,
-            "hp": ed.max_hp,
-            "max_hp": ed.max_hp,
-            "atk": ed.attack,
-            "action": ed.action_name,
-            "story": ed.story,
-            "dead": false,
-            "is_boss": ed.is_boss,  # 是否 Boss（分阶段 + 大招）
-            "phased": false,        # Boss 是否已进入第三阶段（换形态）
-            "skip_next": false,   # 被眩晕/魅惑：下一轮回合跳过反击
-            "burn": 0,            # 灼烧剩余回合数
-            "burn_dmg": 0,        # 灼烧每回合伤害
-        }
-        e["node"] = _make_enemy_node(e, ed.color, xs[i])
-        world.add_child(e.node)
-        e["bar"] = _make_enemy_bar(e, i)
-        enemies.append(e)
+        _spawn_one_enemy(group[i], xs[i])
+
+
+# 生成单个敌人（开局布怪 + Boss 召唤小怪共用）
+func _spawn_one_enemy(eid: String, x: float) -> Dictionary:
+    var ed := load(ENEMY_PATH + eid + ".tres") as EnemyData
+    if ed == null:
+        return {}
+    var e := {
+        "id": ed.id,
+        "name": ed.display_name,
+        "hp": ed.max_hp,
+        "max_hp": ed.max_hp,
+        "atk": ed.attack,
+        "action": ed.action_name,
+        "story": ed.story,
+        "dead": false,
+        "is_boss": ed.is_boss,  # 是否 Boss（分阶段 + 大招）
+        "phased": false,        # Boss 是否已进入第三阶段（换形态）
+        "charging": false,      # Boss 是否在蓄力大招（可被打断）
+        "charge_t": 0.0,        # 蓄力剩余时间（秒）
+        "weak_hits": 0,         # 弱点已被击中次数（Boss 专属）
+        "weak_broken": false,   # 弱点是否已击破（Boss 攻击削弱）
+        "summoned": 0,          # 已召唤小怪次数（Boss 专属）
+        "skip_next": false,     # 被眩晕/魅惑：下一轮回合跳过反击
+        "burn": 0,              # 灼烧剩余回合数
+        "burn_dmg": 0,          # 灼烧每回合伤害
+    }
+    var idx := enemies.size()
+    e["node"] = _make_enemy_node(e, ed.color, x)
+    e["bar"] = _make_enemy_bar(e, idx)
+    world.add_child(e.node)
+    enemies.append(e)
+    return e
 
 
 func _make_enemy_node(e: Dictionary, color: Color, x: float) -> Node2D:
@@ -289,6 +300,14 @@ func _process(delta: float) -> void:
         warned = false
         _enemy_attack()
 
+    # Boss 蓄力大招倒计时：时间到就喷毒
+    for e in enemies:
+        if e.get("charging", false):
+            e["charge_t"] -= delta
+            if e["charge_t"] <= 0.0:
+                e["charging"] = false
+                _boss_ult(e)
+
     # 队友连段冷却递减
     for f in fighters:
         if f.cooldown > 0.0:
@@ -341,6 +360,13 @@ func _melee_attack(f: Dictionary) -> void:
         extra += "（完美时机！）"
     t.hp = maxi(0, t.hp - dmg)
     AudioManager.play("attack")
+    # 打断 Boss 蓄力大招（打断后 Boss 下轮硬直）
+    if t.get("is_boss", false) and t.get("charging", false):
+        t["charging"] = false
+        t["skip_next"] = true
+        combo += 3
+        extra += "（打断蓄力！）"
+    extra += _check_weak(t)
     combo += f.data.combo_hits
     hit_gauge = minf(100.0, hit_gauge + 25.0)
     f.cooldown = ATTACK_COOLDOWN
@@ -357,6 +383,7 @@ func _mage_attack(f: Dictionary) -> void:
         return
     var total := 0
     var hits := 0
+    var extra := ""
     for e in enemies:
         if e.hp > 0:
             var dmg: int = int(f.data.attack) + int(combo / 20.0)
@@ -364,6 +391,13 @@ func _mage_attack(f: Dictionary) -> void:
             total += dmg
             hits += 1
             _show_hit_number(e.node, dmg)
+            # 打断 Boss 蓄力大招 + 弱点判定
+            if e.get("is_boss", false) and e.get("charging", false):
+                e["charging"] = false
+                e["skip_next"] = true
+                combo += 3
+                extra += "（打断蓄力！）"
+            extra += _check_weak(e)
             if f.data.skill_effect == "burn":
                 e.burn = 2                                   # 灼烧：2 回合
                 e.burn_dmg = 6                               # 每回合 6 点
@@ -377,11 +411,10 @@ func _mage_attack(f: Dictionary) -> void:
     combo += f.data.combo_hits * hits
     hit_gauge = minf(100.0, hit_gauge + 25.0)
     f.cooldown = ATTACK_COOLDOWN
-    var extra := ""
     if f.data.skill_effect == "burn":
-        extra = "（灼烧！）"
+        extra = "（灼烧！）" + extra
     elif f.data.skill_effect == "charm":
-        extra = "（魅惑！）"
+        extra = "（魅惑！）" + extra
     if warned:
         extra += "（完美时机！）"
     msg_label.text = "%s 吟唱「%s」！命中 %d 个敌人，共 -%d%s（连段 x%d）" % [f.data.display_name, f.data.skill_name, hits, total, extra, combo]
@@ -454,7 +487,7 @@ func _enemy_attack() -> void:
         return
     var e: Dictionary = candidates[randi_range(0, candidates.size() - 1)]
 
-    # Boss：第三阶段（≤30% 血）换形态 + 大招更凶
+    # Boss：第三阶段（≤30% 血）换形态 + 暴露弱点 + 召唤小怪
     if e.is_boss:
         if e.hp <= e.max_hp * 0.3 and not e.get("phased", false):
             e["phased"] = true
@@ -462,19 +495,19 @@ func _enemy_attack() -> void:
             bb.modulate = Color(1, 0.35, 0.55)
             msg_label.text = "%s 现出真身，凶威暴涨！" % e.name
             AudioManager.play("boss_roar")
+            _expose_core(e)
+            _summon_minion(e)
+        # 二/三阶段：概率补充召唤小怪（营造 Boss + 群怪的压迫感）
+        elif e.summoned < 2 and e.hp < e.max_hp * 0.6 and randi() % 100 < 20:
+            _summon_minion(e)
+        # 大招：概率进入「蓄力」——被打中会中断，蓄力完成才喷毒（可被打断）
         var ult_rate := 50 if e.hp <= e.max_hp * 0.3 else 30
-        if e.hp < e.max_hp * 0.5 and randi() % 100 < ult_rate:
-            var poison := int(e.atk * (0.8 if e.hp <= e.max_hp * 0.3 else 0.6))
-            for f in fighters:
-                if f.hp > 0:
-                    f.hp -= poison
-            msg_label.text = "%s 喷出「%s」！全体受到 %d 点毒伤！" % [e.name, e.action, poison]
-            AudioManager.play("boss_roar")
-            _flash_screen(Color(0.3, 1, 0.3, 0.25))
+        if e.hp < e.max_hp * 0.5 and not e.get("charging", false) and randi() % 100 < ult_rate:
+            e["charging"] = true
+            e["charge_t"] = 1.8
+            msg_label.text = "%s 深吸一口气，正在蓄力喷毒！（抓紧打断）" % e.name
+            AudioManager.play("warn")
             _clear_skip()
-            _refresh_ui()
-            if _all_allies_dead():
-                _end_battle(false)
             return
 
     # 选目标：25% 概率偷袭后排法师，否则优先打前排肉盾
@@ -493,15 +526,18 @@ func _enemy_attack() -> void:
         else:
             target = alive[randi_range(0, alive.size() - 1)]
 
-    # 残血狂暴：血量 <30% 攻击力 x1.5
+    # 弱点已破削弱（攻击 -30%）/ 残血狂暴（<30% 血攻击 x1.5）
     var atk := int(e.atk)
-    var rage := ""
+    var mods := ""
+    if e.get("weak_broken", false):
+        atk = int(atk * 0.7)
+        mods += "（弱点已破）"
     if e.hp < e.max_hp * 0.3:
         atk = int(e.atk * 1.5)
-        rage = "（狂暴！）"
+        mods += "（狂暴！）"
     target.hp -= atk
     AudioManager.play("hit_ally")
-    var msg := "%s 使出「%s」！%s 受到 -%d%s" % [e.name, e.action, target.data.display_name, atk, rage]
+    var msg := "%s 使出「%s」！%s 受到 -%d%s" % [e.name, e.action, target.data.display_name, atk, mods]
     _flash_node(target.node, Color(1, 0, 0))
 
     # 连招：Boss 50% / 普通敌人 25% 概率追加第二击（半伤）
@@ -517,6 +553,70 @@ func _enemy_attack() -> void:
     _refresh_ui()
     if _all_allies_dead():
         _end_battle(false)
+
+
+# Boss 蓄力完成的喷毒大招
+func _boss_ult(e: Dictionary) -> void:
+    if battle_over:
+        return
+    var mult := 0.8 if e.hp <= e.max_hp * 0.3 else 0.6
+    if e.get("weak_broken", false):
+        mult *= 0.7   # 弱点已破：大招也削弱
+    var poison := int(e.atk * mult)
+    for f in fighters:
+        if f.hp > 0:
+            f.hp -= poison
+    msg_label.text = "%s 喷出「%s」！全体受到 %d 点毒伤！" % [e.name, e.action, poison]
+    AudioManager.play("boss_roar")
+    _flash_screen(Color(0.3, 1, 0.3, 0.25))
+    _refresh_ui()
+    if _all_allies_dead():
+        _end_battle(false)
+
+
+# Boss 召唤一只小怪（九婴）加入战场
+func _summon_minion(e: Dictionary) -> void:
+    if int(e.get("summoned", 0)) >= 2:
+        return
+    var alive := 0
+    for x in enemies:
+        if x.hp > 0:
+            alive += 1
+    if alive >= 4:
+        return
+    e["summoned"] = int(e.get("summoned", 0)) + 1
+    msg_label.text = "%s 呼出一只「九婴」！" % e.name
+    AudioManager.play("boss_roar")
+    _spawn_one_enemy("jiuying", randi_range(640, 900))
+
+
+# Boss 第三阶段暴露弱点（毒核）
+func _expose_core(e: Dictionary) -> void:
+    if e.get("weak_broken", false):
+        return
+    var core := _rect(Vector2(18, 18), Color(0.6, 0.2, 1.0))
+    core.name = "Core"
+    core.position = Vector2(0, -25)
+    e.body.add_child(core)
+    e["core"] = core
+
+
+# 命中 Boss 弱点判定：30% 概率击中弱点，累计 3 次弱点击破、Boss 被削弱
+func _check_weak(e: Dictionary) -> String:
+    if not e.get("is_boss", false) or not e.get("phased", false) or e.get("weak_broken", false):
+        return ""
+    if randi() % 100 >= 30:
+        return ""
+    e["weak_hits"] = int(e.get("weak_hits", 0)) + 1
+    _flash_node(e.node, Color(0.6, 0.2, 1.0))
+    if int(e.weak_hits) >= 3:
+        e["weak_broken"] = true
+        if e.has("core"):
+            var cn: Node = e.get("core")
+            if is_instance_valid(cn):
+                cn.queue_free()
+        return "（弱点已破！Boss 攻击 -30%）"
+    return "（击中弱点 %d/3）" % int(e.weak_hits)
 
 
 # 反击前的蓄力预警：随机预告一个敌人 + 闪橙红
