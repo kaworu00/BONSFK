@@ -84,5 +84,6 @@ func _buy() -> void:
         return
     GlobalState.exp_crystals -= int(t.cost)
     GlobalState.trinkets.append(id)
+    AudioManager.play("buy")
     _msg.text = "购入「%s」！" % str(t.name)
     _refresh()

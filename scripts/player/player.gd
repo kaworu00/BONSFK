@@ -137,6 +137,7 @@ func _fire_crystal() -> void:
     crystal.set("aim_direction", aim.normalized())
     crystal.set("global_position", global_position + Vector2(0, -10))
     get_parent().add_child(crystal)
+    AudioManager.play("shoot")
 
     # 冷却：用 await 等 0.4 秒再允许发射
     can_fire = false

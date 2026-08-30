@@ -340,6 +340,7 @@ func _melee_attack(f: Dictionary) -> void:
         combo += 5
         extra += "（完美时机！）"
     t.hp = maxi(0, t.hp - dmg)
+    AudioManager.play("attack")
     combo += f.data.combo_hits
     hit_gauge = minf(100.0, hit_gauge + 25.0)
     f.cooldown = ATTACK_COOLDOWN
@@ -385,6 +386,7 @@ func _mage_attack(f: Dictionary) -> void:
         extra += "（完美时机！）"
     msg_label.text = "%s 吟唱「%s」！命中 %d 个敌人，共 -%d%s（连段 x%d）" % [f.data.display_name, f.data.skill_name, hits, total, extra, combo]
     _show_aoe()
+    AudioManager.play("skill")
     _after_damage()
 
 
@@ -403,6 +405,7 @@ func _do_finisher() -> void:
     combo = 0
     msg_label.text = "决之技！！造成 %d 点伤害！" % total
     _flash_screen(Color(1, 1, 1, 0.6))
+    AudioManager.play("finisher")
     _play_finisher_cutin()
     _after_damage()
 
@@ -458,6 +461,7 @@ func _enemy_attack() -> void:
             var bb: Node2D = e.body
             bb.modulate = Color(1, 0.35, 0.55)
             msg_label.text = "%s 现出真身，凶威暴涨！" % e.name
+            AudioManager.play("boss_roar")
         var ult_rate := 50 if e.hp <= e.max_hp * 0.3 else 30
         if e.hp < e.max_hp * 0.5 and randi() % 100 < ult_rate:
             var poison := int(e.atk * (0.8 if e.hp <= e.max_hp * 0.3 else 0.6))
@@ -465,6 +469,7 @@ func _enemy_attack() -> void:
                 if f.hp > 0:
                     f.hp -= poison
             msg_label.text = "%s 喷出「%s」！全体受到 %d 点毒伤！" % [e.name, e.action, poison]
+            AudioManager.play("boss_roar")
             _flash_screen(Color(0.3, 1, 0.3, 0.25))
             _clear_skip()
             _refresh_ui()
@@ -495,6 +500,7 @@ func _enemy_attack() -> void:
         atk = int(e.atk * 1.5)
         rage = "（狂暴！）"
     target.hp -= atk
+    AudioManager.play("hit_ally")
     var msg := "%s 使出「%s」！%s 受到 -%d%s" % [e.name, e.action, target.data.display_name, atk, rage]
     _flash_node(target.node, Color(1, 0, 0))
 
@@ -520,6 +526,7 @@ func _warn_attack() -> void:
         return
     var e: Dictionary = alive[randi_range(0, alive.size() - 1)]
     msg_label.text = "%s 正在蓄力…" % e.name
+    AudioManager.play("warn")
     _flash_node(e.node, Color(1, 0.4, 0.1))
 
 
@@ -561,6 +568,7 @@ func _mark_dead_enemies() -> void:
     for e in enemies:
         if e.hp <= 0 and not e.dead:
             e.dead = true
+            AudioManager.play("kill")
             var tween := create_tween()
             tween.tween_property(e.body, "modulate:a", 0.0, 0.25)
             tween.parallel().tween_property(e.body, "position:y", -120.0, 0.25)
@@ -580,6 +588,7 @@ func _end_battle(won: bool) -> void:
             reward = int(reward * 1.5)   # 聚灵玉：经验水晶 +50%
         GlobalState.exp_crystals += reward
         msg_label.text = "胜利！最终连段 x%d，获得 %d 经验水晶" % [combo, reward]
+        AudioManager.play("crystal")
     else:
         # 败北：全队回满（读档式重来，避免卡死）
         for f in fighters:

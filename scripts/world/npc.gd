@@ -108,6 +108,7 @@ func _recruit() -> void:
         GlobalState.party.append(npc_id)
         joined = true
     EventBus.npc_recruited.emit(npc_id)
+    AudioManager.play("recruit")
     _show_story(cd, joined)
 
 
@@ -175,6 +176,7 @@ func _heal() -> void:
     if count == 0:
         _show_service_msg("队伍还是空的，先在前方招募英灵吧。")
     else:
+        AudioManager.play("heal")
         _show_service_msg("神龛光芒洒下，%d 名英灵生命恢复全满！" % count)
 
 
