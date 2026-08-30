@@ -107,6 +107,7 @@ func _recruit() -> void:
     if GlobalState.party.size() < 4 and not GlobalState.party.has(npc_id):
         GlobalState.party.append(npc_id)
         joined = true
+    GlobalState.seal_value += 1   # 每引渡一位英灵，封印值 +1
     EventBus.npc_recruited.emit(npc_id)
     AudioManager.play("recruit")
     _show_story(cd, joined)
@@ -175,9 +176,18 @@ func _heal() -> void:
             count += 1
     if count == 0:
         _show_service_msg("队伍还是空的，先在前方招募英灵吧。")
-    else:
-        AudioManager.play("heal")
-        _show_service_msg("神龛光芒洒下，%d 名英灵生命恢复全满！" % count)
+        return
+    AudioManager.play("heal")
+    # 休息消耗时间配额
+    GlobalState.periods = maxi(0, GlobalState.periods - 1)
+    _show_service_msg("神龛光芒洒下，%d 名英灵生命恢复全满！（剩余回合 %d）" % [count, GlobalState.periods])
+    _maybe_end_after_rest()
+
+
+func _maybe_end_after_rest() -> void:
+    var kind := GlobalState.check_ending()
+    if kind != "":
+        EventBus.ending_requested.emit(kind)
 
 
 func _open_shop() -> void:

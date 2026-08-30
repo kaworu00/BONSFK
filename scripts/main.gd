@@ -21,6 +21,8 @@ func _ready() -> void:
     EventBus.battle_requested.connect(_on_battle_requested)
     EventBus.battle_finished.connect(_on_battle_finished)
     EventBus.room_exit_requested.connect(_on_room_exit)
+    EventBus.ending_requested.connect(_on_ending_requested)
+    EventBus.menu_requested.connect(_return_to_menu)
     _show_menu()
 
 
@@ -85,3 +87,23 @@ func _restore_camera() -> void:
         var cam := cams[0] as Camera2D
         if cam != null:
             cam.make_current()
+
+
+# 时间耗尽 / 击败 Boss → 弹出结局界面
+func _on_ending_requested(kind: String) -> void:
+    var Ending := preload("res://scripts/ui/ending_menu.gd")
+    var m = Ending.new()
+    m.set("kind", kind)
+    add_child(m)
+
+
+# 结局界面回车 → 回到主菜单
+func _return_to_menu() -> void:
+    get_tree().paused = false
+    if battle != null and is_instance_valid(battle):
+        battle.queue_free()
+        battle = null
+    if room != null and is_instance_valid(room):
+        room.queue_free()
+        room = null
+    _show_menu()

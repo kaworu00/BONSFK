@@ -13,6 +13,9 @@ var boosts: Dictionary = {}    # 英灵升格加点：{id: {"hp": 点数, "atk":
 var current_room: String = "cave_01"  # 当前所在房间 id（存档用）
 var party_hp: Dictionary = {}  # 出战英灵当前血量 {id: hp}（战斗损耗保留，休息点回满）
 var trinkets: Array = []       # 已购饰品 id 列表（全局被动）
+var chapter: int = 1           # 当前章节（时间章节）
+var periods: int = 12          # 当前章节剩余回合数（时间配额）
+var boss_defeated: bool = false  # 是否已击败 Boss「相繇」（影响结局）
 
 # 全局 UI 字体：Godot 自带字体不含中文，这里用系统字体显示中文。
 var ui_font: SystemFont
@@ -127,6 +130,15 @@ func has_trinket(id: String) -> bool:
     return trinkets.has(id)
 
 
+# 结局判定：满足条件就返回结局种类（"" = 还没到结局）
+func check_ending() -> String:
+    if boss_defeated:
+        return "true" if seal_value >= 8 else "normal"
+    if periods <= 0:
+        return "bad"
+    return ""
+
+
 # 重置进度（新游戏用）
 func reset_progress() -> void:
     party = []
@@ -137,3 +149,6 @@ func reset_progress() -> void:
     current_room = "cave_01"
     party_hp = {}
     trinkets = []
+    chapter = 1
+    periods = 12
+    boss_defeated = false

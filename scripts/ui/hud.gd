@@ -11,6 +11,7 @@ const PartyMenuScript := preload("res://scripts/ui/party_menu.gd")
 
 var party_label: Label
 var exp_label: Label
+var time_label: Label
 var title_label: Label
 var upgrade_menu = null
 var party_menu = null
@@ -33,6 +34,10 @@ func _ready() -> void:
     exp_label.position = Vector2(20, 62)
     add_child(exp_label)
 
+    time_label = GlobalState.make_label("", 14, Color(1, 0.85, 0.4))
+    time_label.position = Vector2(20, 82)
+    add_child(time_label)
+
     var hint := GlobalState.make_label(
         "A/D 移动 · 空格 跳 · S 蹲 · J 灵石 · E 对话 · T 升级 · N 编队 · 碰魔物进战斗 · F5/F9 存读档", 13,
         Color(0.75, 0.8, 0.9)
@@ -49,6 +54,7 @@ func _process(_delta: float) -> void:
         names.append(cd.display_name if cd != null else str(id))
     party_label.text = "队伍：" + ("、".join(names) if not names.is_empty() else "空（靠近发光的英灵按 E 招募）")
     exp_label.text = "经验水晶：%d" % GlobalState.exp_crystals
+    time_label.text = "章节 %d · 剩余回合 %d · 封印值 %d" % [GlobalState.chapter, GlobalState.periods, GlobalState.seal_value]
 
     # 存档 / 读档
     if Input.is_action_just_pressed("save"):

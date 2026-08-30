@@ -687,16 +687,28 @@ func _end_battle(won: bool) -> void:
         if GlobalState.has_trinket("julingyu"):
             reward = int(reward * 1.5)   # 聚灵玉：经验水晶 +50%
         GlobalState.exp_crystals += reward
-        msg_label.text = "胜利！最终连段 x%d，获得 %d 经验水晶" % [combo, reward]
         AudioManager.play("crystal")
+        # 击败终极 Boss：标记 + 封印值大涨
+        if enemy_id == "xiangyao":
+            GlobalState.boss_defeated = true
+            GlobalState.seal_value += 3
+            msg_label.text = "击败「相繇」！山海封印松动，英灵归位……"
+        else:
+            msg_label.text = "胜利！最终连段 x%d，获得 %d 经验水晶" % [combo, reward]
     else:
         # 败北：全队回满（读档式重来，避免卡死）
         for f in fighters:
             if f.data.id != "ph":
                 GlobalState.party_hp[f.data.id] = f.data.max_hp
         msg_label.text = "败北……回到探索。"
+    # 时间消耗：每场战斗 -1 回合
+    GlobalState.periods = maxi(0, GlobalState.periods - 1)
     await get_tree().create_timer(1.6).timeout
     EventBus.battle_finished.emit(won)
+    # 结局判定
+    var kind := GlobalState.check_ending()
+    if kind != "":
+        EventBus.ending_requested.emit(kind)
 
 
 # --- 数据/刷新辅助 ---

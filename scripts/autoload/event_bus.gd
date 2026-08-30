@@ -23,3 +23,9 @@ signal game_start_requested(new_game: bool)
 
 # 房间出口门请求切换（to_room：目标房间 id）
 signal room_exit_requested(to_room: String)
+
+# 触发结局（kind：true=真结局 / normal=普通结局 / bad=时间耗尽）
+signal ending_requested(kind: String)
+
+# 请求回到主菜单（结局界面回车后）
+signal menu_requested

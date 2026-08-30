@@ -19,6 +19,9 @@ func save_game() -> void:
         "current_room": GlobalState.current_room,
         "party_hp": GlobalState.party_hp,
         "trinkets": GlobalState.trinkets,
+        "chapter": GlobalState.chapter,
+        "periods": GlobalState.periods,
+        "boss_defeated": GlobalState.boss_defeated,
     }
     var file := FileAccess.open(SAVE_PATH, FileAccess.WRITE)
     if file == null:
@@ -51,5 +54,8 @@ func load_game() -> bool:
         var tr = parsed.get("trinkets", [])
         if tr is Array:
             GlobalState.trinkets = tr
+        GlobalState.chapter = int(parsed.get("chapter", 1))
+        GlobalState.periods = int(parsed.get("periods", 12))
+        GlobalState.boss_defeated = bool(parsed.get("boss_defeated", false))
         return true
     return false
