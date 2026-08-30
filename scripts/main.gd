@@ -61,13 +61,18 @@ func _on_room_exit(to_room: String) -> void:
 func _on_battle_requested(enemy_id: String) -> void:
     if battle != null:
         return  # 已经在战斗中，忽略重复请求
-    # 冻结并隐藏房间层（避免玩家还能动，也避免探索相机干扰战斗画面）
-    room.process_mode = Node.PROCESS_MODE_DISABLED
-    room.visible = false
 
     battle = BattleScene.instantiate()
     battle.set("enemy_id", enemy_id)
     add_child(battle)
+    # 冻结并隐藏房间层：延后到物理回调结束再执行，
+    # 避免在 body_entered 物理回调里直接禁用物理节点（会触发引擎报错）。
+    _disable_room.call_deferred()
+
+
+func _disable_room() -> void:
+    room.process_mode = Node.PROCESS_MODE_DISABLED
+    room.visible = false
 
 
 func _on_battle_finished(_won: bool) -> void:
